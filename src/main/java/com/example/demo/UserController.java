@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.example.demo.models.*;
 import com.example.demo.repository.UserRepository;
+import org.springframework.web.bind.annotation.GetMapping;
+
 
 @RestController
 @RequestMapping("/user")
@@ -21,19 +24,21 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+    /* writing for swagger doc */
     @PostMapping("/create-user")
-    public Map<String, Object> createUser(@RequestParam String source, @RequestBody User user) {
+    public Map<String, Object> createUser(@RequestBody User user) {
         Map<String, Object> response = new HashMap<>();
-        response.put("source", source);
+
+        userRepository.save(user);
+
         response.put("username", user.getUserName());
         response.put("age", user.getAge());
         response.put("message", "User created successfully");
         return response;
     }
 
-    @PostMapping("/create-new-user")
-    public String createUser(@RequestBody User user) {
-        userRepository.save(user);
-        return "User created successfully with username: " + user.getUserName();
+    @GetMapping("/get-users")
+    public List<User> getUsers(@RequestBody User user) {
+        return userRepository.findAll();
     }
 }
